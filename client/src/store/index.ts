@@ -1,5 +1,5 @@
 import { create } from "zustand";
 
-const useBoardStore = create((set) => ({}));
+const useCustomStore = create((set) => ({}));
 
-export default useBoardStore;
+export default useCustomStore;

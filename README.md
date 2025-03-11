@@ -7,5 +7,5 @@
 
 
 ## Backend
-- Node + Express
-- Redis 
+- FastAPI
+- uv

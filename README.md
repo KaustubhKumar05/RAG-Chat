@@ -9,3 +9,10 @@
 ## Backend
 - FastAPI
 - uv
+
+
+## Todo
+- [ ] Chat interface
+- [ ] Handle source addition
+- [ ] Refactor   
+- [ ] Perf: Streaming, indexedDB, code snippet handling 

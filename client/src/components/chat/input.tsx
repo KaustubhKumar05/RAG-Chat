@@ -2,22 +2,22 @@ import React, { useState } from "react";
 import { Send } from "lucide-react";
 
 interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (message: string) => Promise<void>;
 }
 
 export const ChatInput = ({ onSend }: ChatInputProps): JSX.Element => {
   const [message, setMessage] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
-      onSend(message);
+      await onSend(message);
       setMessage("");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={async (e) => await handleSubmit(e)} className="flex gap-2">
       <input
         type="text"
         value={message}

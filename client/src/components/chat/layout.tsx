@@ -9,7 +9,10 @@ export const ChatLayout = (): JSX.Element => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isSourcesModalOpen, setIsSourcesModalOpen] = useState<boolean>(false);
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async (content: string) => {
+    if (!content) {
+      return;
+    }
     setMessages((prev) => [
       ...prev,
       {
@@ -18,7 +21,26 @@ export const ChatLayout = (): JSX.Element => {
         sender: "user",
       },
     ]);
-    // TODO: Implement actual LLM call here
+    const resp = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: content }),
+    });
+    console.log({ resp });
+    if (!resp.ok) {
+      throw Error("Could not get response from the model");
+    }
+    const data = await resp.json();
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        content: data.response,
+        sender: "assistant",
+      },
+    ]);
   };
 
   const handleAddSources = (files: File[], links: string[]) => {

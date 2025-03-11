@@ -26,6 +26,7 @@ async def root():
 @app.post("/chat")
 async def chat(message: ChatMessage):
     try:
+        print("debug>", message)
         response = await rag.chat(message.message)
         return {"response": response}
     except Exception as e:

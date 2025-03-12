@@ -39,7 +39,11 @@ class RAGHandler:
 
     async def chat(self, message: str, user_id: str) -> str:
         self._get_or_create_user_resources(user_id)
-        response = await self.user_chains[user_id].ainvoke({"question": message})
+        response = await self.user_chains[user_id].ainvoke(
+            {
+                "question": f"Generate your answer only from the provided context. If there is no context, ask the user to 'add sources'. {message}"
+            }
+        )
         return response["answer"]
 
     def add_texts(self, texts: List[str], user_id: str, name: str) -> None:

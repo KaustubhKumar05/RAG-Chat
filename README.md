@@ -16,17 +16,16 @@
 
 - [ ] Source addition:
     - [ ] File upload handling
-    - [x] Accept multiple links, reduce recursive crawls  
+    - [x] Accept multiple links 
 
 - [ ] Chat interface:
     - [x] State handling
-    - [ ] Model dropdown
     - [ ] Polish UI
 
 - [ ] Refactor   
 
 - [ ] Perf: Streaming, indexedDB, code snippet handling 
 
-- [ ] Auth
+- [ ] Accept OAI key as auth
 
 - [ ] CI/CD - Render and Vercel

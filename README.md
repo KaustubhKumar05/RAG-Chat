@@ -16,10 +16,10 @@
 
 - [ ] Source addition:
     - [ ] File upload handling
-    - [ ] Accept multiple links, reduce recursive crawls  
+    - [x] Accept multiple links, reduce recursive crawls  
 
 - [ ] Chat interface:
-    - [ ] State handling
+    - [x] State handling
     - [ ] Model dropdown
     - [ ] Polish UI
 

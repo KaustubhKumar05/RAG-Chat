@@ -10,20 +10,28 @@ type ChatStore = {
   setIsSourceModalOpen: (open: boolean) => void;
   fetchingResponse: boolean;
   setFetchingResponse: (fetching: boolean) => void;
+  sourceList: string[];
+  setSourceList: (sourceList: string[]) => void;
 };
 
 const useChatStore = create<ChatStore>((set) => ({
   messages: [],
   setMessages: (newMessages: Message[] | ((prev: Message[]) => Message[])) =>
     set((state) => ({
-      messages: typeof newMessages === 'function' ? newMessages(state.messages) : newMessages
+      messages:
+        typeof newMessages === "function"
+          ? newMessages(state.messages)
+          : newMessages,
     })),
   sources: [],
   setSources: (newSources: Source[]) => set({ sources: newSources }),
   isSourceModalOpen: false,
   setIsSourceModalOpen: (open: boolean) => set({ isSourceModalOpen: open }),
   fetchingResponse: false,
-  setFetchingResponse: (fetching: boolean) => set({ fetchingResponse: fetching }),
+  setFetchingResponse: (fetching: boolean) =>
+    set({ fetchingResponse: fetching }),
+  sourceList: [],
+  setSourceList: (sourceList: string[]) => set({ sourceList }),
 }));
 
 export default useChatStore;

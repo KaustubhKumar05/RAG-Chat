@@ -19,6 +19,7 @@ class RAGHandler:
         self.user_stores: Dict[str, InMemoryVectorStore] = {}
         self.user_memories: Dict[str, ConversationBufferMemory] = {}
         self.user_chains: Dict[str, ConversationalRetrievalChain] = {}
+        self.user_sources: Dict[str, List[str]] = {}
 
     def _get_or_create_user_resources(self, user_id: str):
         if user_id not in self.user_stores:
@@ -41,13 +42,17 @@ class RAGHandler:
         response = await self.user_chains[user_id].ainvoke({"question": message})
         return response["answer"]
 
-    def add_texts(self, texts: List[str], user_id: str) -> None:
+    def add_texts(self, texts: List[str], user_id: str, name: str) -> None:
         self._get_or_create_user_resources(user_id)
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=2000,
             chunk_overlap=300,
             separators=["\n\n", "\n", " ", ""],
         )
+        if user_id not in self.user_sources:
+            self.user_sources[user_id] = []
+
+        self.user_sources[user_id].append(name)
 
         chunks = []
         for text in texts:
@@ -55,3 +60,6 @@ class RAGHandler:
             chunks.extend(doc_chunks)
 
         self.user_stores[user_id].add_texts(chunks)
+
+    def get_sources(self, user_id: str) -> List[str]:
+        return self.user_sources.get(user_id, [])

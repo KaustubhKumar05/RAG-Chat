@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 class WebPage(BaseModel):
     url: str
@@ -11,5 +11,6 @@ class ChatMessage(BaseModel):
 
 
 class SourceURL(BaseModel):
-    url: str
-    max_pages: int = 5
+    name: str
+    link: str
+    max_pages: Optional[int] = 5

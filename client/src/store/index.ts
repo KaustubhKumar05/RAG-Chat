@@ -8,6 +8,8 @@ type ChatStore = {
   setSources: (sources: Source[]) => void;
   isSourceModalOpen: boolean;
   setIsSourceModalOpen: (open: boolean) => void;
+  fetchingResponse: boolean;
+  setFetchingResponse: (fetching: boolean) => void;
 };
 
 const useChatStore = create<ChatStore>((set) => ({
@@ -20,6 +22,8 @@ const useChatStore = create<ChatStore>((set) => ({
   setSources: (newSources: Source[]) => set({ sources: newSources }),
   isSourceModalOpen: false,
   setIsSourceModalOpen: (open: boolean) => set({ isSourceModalOpen: open }),
+  fetchingResponse: false,
+  setFetchingResponse: (fetching: boolean) => set({ fetchingResponse: fetching }),
 }));
 
 export default useChatStore;

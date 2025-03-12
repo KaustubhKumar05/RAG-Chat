@@ -1,11 +1,14 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useRef, useEffect } from "react";
 import useChatStore from "../../store";
 
 export const ChatMessages = memo((): JSX.Element => {
-  const { messages } = useChatStore();
+  const { messages, fetchingResponse } = useChatStore();
+  const bottomRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    console.log({ messages });
-  });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, fetchingResponse]);
+
   return (
     <div className="space-y-4">
       {messages.map((message) => (
@@ -26,6 +29,10 @@ export const ChatMessages = memo((): JSX.Element => {
           </div>
         </div>
       ))}
+      {fetchingResponse && (
+        <div className="mt-4 bg-blue-50 p-3 w-fit">Thinking...</div>
+      )}
+      <div ref={bottomRef} className="h-1" />
     </div>
   );
 });

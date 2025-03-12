@@ -4,7 +4,7 @@ import useChatStore from "../../store";
 
 export const ChatInput = memo((): JSX.Element => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { messages, setMessages } = useChatStore();
+  const { setMessages, fetchingResponse, setFetchingResponse } = useChatStore();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const message = inputRef.current?.value || "";
@@ -16,7 +16,7 @@ export const ChatInput = memo((): JSX.Element => {
       if (!content) {
         return;
       }
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: Date.now(),
@@ -24,6 +24,7 @@ export const ChatInput = memo((): JSX.Element => {
           sender: "user",
         },
       ]);
+      setFetchingResponse(true);
       const resp = await fetch("http://localhost:8000/chat", {
         method: "POST",
         headers: {
@@ -36,8 +37,8 @@ export const ChatInput = memo((): JSX.Element => {
         throw Error("Could not get response from the model");
       }
       const data = await resp.json();
-      console.log("before adding agent resp", { messages });
-      setMessages(prev => [
+      setFetchingResponse(false);
+      setMessages((prev) => [
         ...prev,
         {
           id: Date.now(),
@@ -45,7 +46,6 @@ export const ChatInput = memo((): JSX.Element => {
           sender: "assistant",
         },
       ]);
-      console.log("after adding agent resp", { messages });
     }
   };
 
@@ -54,10 +54,12 @@ export const ChatInput = memo((): JSX.Element => {
       <input
         type="text"
         ref={inputRef}
+        disabled={fetchingResponse}
         className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500"
         placeholder="Type your message..."
       />
       <button
+        disabled={fetchingResponse}
         type="submit"
         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
       >

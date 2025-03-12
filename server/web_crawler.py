@@ -32,39 +32,33 @@ class WebCrawler:
             raise ValueError(f"Invalid URL: {url}")
 
         pages = []
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
+        queue = [(url, 0)]  # (url, depth) pairs
+        self.visited_urls = set()
 
-            text_content = self.extract_text(response.text)
-            pages.append(WebPage(url=url, content=text_content))
+        while queue and len(pages) < max_pages:
+            current_url, depth = queue.pop(0)
+            if current_url in self.visited_urls:
+                continue
 
-            # Extract and follow links if needed
-            if len(pages) < max_pages:
-                soup = BeautifulSoup(response.text, "html.parser")
-                for link in soup.find_all("a"):
-                    if len(pages) >= max_pages:
-                        break
+            try:
+                self.visited_urls.add(current_url)
+                response = requests.get(current_url)
+                response.raise_for_status()
+                text_content = self.extract_text(response.text)
+                pages.append(WebPage(url=current_url, content=text_content))
 
-                    href = link.get("href")
-                    if href:
-                        absolute_url = urljoin(url, href)
-                        if (
-                            self.is_valid_url(absolute_url)
-                            and absolute_url not in self.visited_urls
-                        ):
-                            self.visited_urls.add(absolute_url)
-                            try:
-                                sub_response = requests.get(absolute_url)
-                                sub_response.raise_for_status()
-                                text_content = self.extract_text(sub_response.text)
-                                pages.append(
-                                    WebPage(url=absolute_url, content=text_content)
-                                )
-                            except requests.RequestException:
-                                continue
+                # Only after processing the content, extract links for next level
+                if len(pages) < max_pages:
+                    soup = BeautifulSoup(response.text, "html.parser")
+                    for link in soup.find_all("a"):
+                        href = link.get("href")
+                        if href:
+                            absolute_url = urljoin(current_url, href)
+                            if self.is_valid_url(absolute_url) and absolute_url not in self.visited_urls:
+                                queue.append((absolute_url, depth + 1))
 
-        except requests.RequestException as e:
-            raise Exception(f"Error crawling {url}: {str(e)}")
+            except requests.RequestException as e:
+                print("debug> crawling error:", e)
+                continue
 
         return pages

@@ -9,29 +9,26 @@ app = FastAPI()
 rag = RAGHandler()
 crawler = WebCrawler()
 
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # Add env var here
+    allow_origins=["http://localhost:5173"],  # Vite's default port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 @app.get("/")
 async def root():
     return {"message": "RAG Chat API is running"}
 
-
 @app.post("/chat")
 async def chat(message: ChatMessage):
     try:
-        print("debug>", message)
         response = await rag.chat(message.message)
         return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.post("/upload")
 async def upload_source(source: SourceURL):
@@ -49,4 +46,5 @@ async def upload_source(source: SourceURL):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

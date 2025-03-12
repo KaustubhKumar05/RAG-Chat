@@ -1,12 +1,11 @@
-import React from "react";
-import { Message } from "../../types";
+import React, { memo, useEffect } from "react";
+import useChatStore from "../../store";
 
-
-interface ChatMessagesProps {
-  messages: Message[];
-}
-
-export const ChatMessages = ({ messages }: ChatMessagesProps): JSX.Element => {
+export const ChatMessages = memo((): JSX.Element => {
+  const { messages } = useChatStore();
+  useEffect(() => {
+    console.log({ messages });
+  });
   return (
     <div className="space-y-4">
       {messages.map((message) => (
@@ -29,4 +28,4 @@ export const ChatMessages = ({ messages }: ChatMessagesProps): JSX.Element => {
       ))}
     </div>
   );
-};
+});

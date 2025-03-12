@@ -1,18 +1,49 @@
-import React, { useState } from "react";
+import React, { memo, useRef } from "react";
 import { Send } from "lucide-react";
+import useChatStore from "../../store";
 
-interface ChatInputProps {
-  onSend: (message: string) => Promise<void>;
-}
-
-export const ChatInput = ({ onSend }: ChatInputProps): JSX.Element => {
-  const [message, setMessage] = useState<string>("");
-
+export const ChatInput = memo((): JSX.Element => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { messages, setMessages } = useChatStore();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const message = inputRef.current?.value || "";
+    if (inputRef.current?.value) {
+      inputRef.current.value = "";
+    }
     if (message.trim()) {
-      await onSend(message);
-      setMessage("");
+      const content = message.trim();
+      if (!content) {
+        return;
+      }
+      setMessages([
+        ...messages,
+        {
+          id: Date.now(),
+          content,
+          sender: "user",
+        },
+      ]);
+      const resp = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: content }),
+      });
+
+      if (!resp.ok) {
+        throw Error("Could not get response from the model");
+      }
+      const data = await resp.json();
+      setMessages([
+        ...messages,
+        {
+          id: Date.now(),
+          content: data.response,
+          sender: "assistant",
+        },
+      ]);
     }
   };
 
@@ -20,8 +51,7 @@ export const ChatInput = ({ onSend }: ChatInputProps): JSX.Element => {
     <form onSubmit={async (e) => await handleSubmit(e)} className="flex gap-2">
       <input
         type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        ref={inputRef}
         className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500"
         placeholder="Type your message..."
       />
@@ -33,4 +63,4 @@ export const ChatInput = ({ onSend }: ChatInputProps): JSX.Element => {
       </button>
     </form>
   );
-};
+});

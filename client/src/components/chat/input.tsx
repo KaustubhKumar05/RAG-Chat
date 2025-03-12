@@ -16,8 +16,8 @@ export const ChatInput = memo((): JSX.Element => {
       if (!content) {
         return;
       }
-      setMessages([
-        ...messages,
+      setMessages(prev => [
+        ...prev,
         {
           id: Date.now(),
           content,
@@ -36,14 +36,16 @@ export const ChatInput = memo((): JSX.Element => {
         throw Error("Could not get response from the model");
       }
       const data = await resp.json();
-      setMessages([
-        ...messages,
+      console.log("before adding agent resp", { messages });
+      setMessages(prev => [
+        ...prev,
         {
           id: Date.now(),
           content: data.response,
           sender: "assistant",
         },
       ]);
+      console.log("after adding agent resp", { messages });
     }
   };
 

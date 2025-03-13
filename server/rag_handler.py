@@ -41,13 +41,17 @@ class RAGHandler:
             print(f"Error creating user resources: {e}")
 
     async def chat(self, message: str, user_id: str) -> str:
-        self._get_or_create_user_resources(user_id)
-        response = await self.user_chains[user_id].ainvoke(
-            {
-                "question": f"Generate your answer only from the provided context. If there is no context, ask the user to 'add sources'. Respond in 50 words or less unless the user asks for a detailed response. Query: {message}"
-            }
-        )
-        return response["answer"]
+        try:
+            self._get_or_create_user_resources(user_id)
+            response = await self.user_chains[user_id].ainvoke(
+                {
+                    "question": f"Generate your answer only from the provided context. If there is no context, always ask the user to 'provide sources'. Respond in 50 words or less unless the user asks for a detailed response. \n\nQuery: {message}"
+                }
+            )
+            return response["answer"]
+        except Exception as e:
+            print(f"Error in chat: {e}")
+            return "An error occurred while processing your request."
 
     def add_texts(self, texts: List[str], user_id: str, name: str) -> None:
         self._get_or_create_user_resources(user_id)

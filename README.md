@@ -1,4 +1,4 @@
-# Fullstack template
+# RAG Chat
 
 ## Frontend
 - React + Vite 

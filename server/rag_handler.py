@@ -22,26 +22,29 @@ class RAGHandler:
         self.user_sources: Dict[str, List[str]] = {}
 
     def _get_or_create_user_resources(self, user_id: str):
-        if user_id not in self.user_stores:
-            self.user_stores[user_id] = InMemoryVectorStore(self.embeddings)
-            self.user_memories[user_id] = ConversationBufferMemory(
-                memory_key="chat_history", return_messages=True
-            )
-            self.user_chains[user_id] = ConversationalRetrievalChain.from_llm(
-                llm=ChatOpenAI(
-                    model_name="gpt-4-turbo",
-                    temperature=0.7,
-                    openai_api_key=get_settings().openai_api_key,
-                ),
-                retriever=self.user_stores[user_id].as_retriever(),
-                memory=self.user_memories[user_id],
-            )
+        try:
+            if user_id not in self.user_stores:
+                self.user_stores[user_id] = InMemoryVectorStore(self.embeddings)
+                self.user_memories[user_id] = ConversationBufferMemory(
+                    memory_key="chat_history", return_messages=True
+                )
+                self.user_chains[user_id] = ConversationalRetrievalChain.from_llm(
+                    llm=ChatOpenAI(
+                        model_name="gpt-4-turbo",
+                        temperature=0.7,
+                        openai_api_key=get_settings().openai_api_key,
+                    ),
+                    retriever=self.user_stores[user_id].as_retriever(),
+                    memory=self.user_memories[user_id],
+                )
+        except Exception as e:
+            print(f"Error creating user resources: {e}")
 
     async def chat(self, message: str, user_id: str) -> str:
         self._get_or_create_user_resources(user_id)
         response = await self.user_chains[user_id].ainvoke(
             {
-                "question": f"Generate your answer only from the provided context. If there is no context, ask the user to 'add sources'. {message}"
+                "question": f"Generate your answer only from the provided context. If there is no context, ask the user to 'add sources'. Respond in 50 words or less unless the user asks for a detailed response. Query: {message}"
             }
         )
         return response["answer"]

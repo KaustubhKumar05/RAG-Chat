@@ -11,6 +11,16 @@
 - Langchain
 - uv
 
+## Flow
+
+Add sources as links using the CTA on the top right
+
+![Screenshot](./SS0.png)
+
+
+Once the page is crawled, the model can be prompted to answer questions about the context:
+![Screenshot](./SS1.png)
+
 
 ## Todo
 
@@ -22,7 +32,7 @@
     - [x] State handling
     - [ ] Polish UI
 
-- [ ] Refactor   
+- [ ] Refactor slop
 
 - [ ] Perf: Streaming, indexedDB, code snippet handling 
 
